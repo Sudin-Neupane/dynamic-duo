@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE — Visual Architects</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --ink: #0d0c0a;
+  --cream: #f2ede6;
+  --rust: #c94b1e;
+  --mist: #d8cfc3;
+  --char: #141412;
+  --D: 'DM Serif Display', serif;
+  --U: 'Syne', sans-serif;
+  --M: 'Space Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--U);
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* CURSOR */
+#cur {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--rust);
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: width .2s, height .2s, border-radius .2s;
+  mix-blend-mode: multiply;
+}
+
+#cur.lg {
+  width: 64px;
+  height: 64px;
+  margin: -27px 0 0 -27px;
+}
+
+#cur.im {
+  width: 280px;
+  height: 190px;
+  border-radius: 3px;
+  margin: -95px 0 0 -140px;
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: normal;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  z-index: 600;
+  background: rgba(242, 237, 230, .9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(13, 12, 10, .1);
+}
+
+.nl {
+  font-family: var(--M);
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.nls {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+
+.nls a {
+  font-family: var(--M);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  position: relative;
+}
+
+.nls a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--rust);
+  transition: width .3s;
+}
+
+.nls a:hover::after {
+  width: 100%;
+}
+
+.np {
+  background: var(--rust);
+  color: var(--cream);
+  font-family: var(--M);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 40px;
+  text-decoration: none;
+}
+
+/* OVERLAYS */
+.ov {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s;
+}
+
+.ov.on {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.ov-row {
+  overflow: hidden;
+  border-top: 1px solid #252525;
+  padding: 14px 0;
+}
+
+.om {
+  display: flex;
+  white-space: nowrap;
+  animation: ms 10s linear infinite;
+  font-family: var(--D);
+  font-size: 68px;
+  color: var(--cream);
+  gap: 48px;
+}
+
+.om b {
+  color: var(--rust);
+  font-weight: 400;
+  font-style: italic;
+}
+
+@keyframes ms {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  padding: 78px 48px 0;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--ink);
+  overflow: hidden;
+  position: relative;
+}
+
+.h-top {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.htag {
+  font-family: var(--M);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.hhl {
+  font-family: var(--D);
+  font-size: clamp(68px, 11vw, 168px);
+  line-height: .86;
+  font-weight: 400;
+  margin: 28px 0 0;
+  z-index: 2;
+  position: relative;
+}
+
+.hhl em {
+  font-style: italic;
+  color: var(--rust);
+}
+
+.hhl .himg {
+  display: inline-block;
+  width: clamp(100px, 10vw, 170px);
+  height: clamp(60px, 6.5vw, 105px);
+  object-fit: cover;
+  vertical-align: middle;
+  margin: 0 10px;
+  border-radius: 3px;
+  transform: rotate(-2.5deg);
+  filter: contrast(1.1) saturate(.9);
+}
+
+.h-bot {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-top: 1px solid var(--mist);
+  margin-top: 44px;
+}
+
+.hbc {
+  padding: 28px 0;
+  border-right: 1px solid var(--mist);
+}
+
+.hbc:last-child {
+  border-right: none;
+  padding-left: 32px;
+}
+
+.hbc:nth-child(2) {
+  padding: 28px 32px;
+}
+
+.hsn {
+  font-family: var(--D);
+  font-size: clamp(40px, 4.5vw, 68px);
+  font-style: italic;
+  color: var(--rust);
+}
+
+.hsl {
+  font-family: var(--M);
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 4px;
+}
+
+.hdesc {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
+  max-width: 320px;
+}
+
+.hvc img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(15%) contrast(1.08);
+}
+
+/* TICKER */
+.tk {
+  background: var(--rust);
+  overflow: hidden;
+  padding: 11px 0;
+}
+
+.tki {
+  display: flex;
+  white-space: nowrap;
+  animation: ms 16s linear infinite;
+}
+
+.tki span {
+  font-family: var(--M);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  padding: 0 36px;
+}
+
+.tki span::after {
+  content: '◆';
+  padding-left: 36px;
+  opacity: .45;
+}
+
+/* ── ABOUT ── */
+#about {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  border-bottom: 1px solid var(--ink);
+}
+
+.abl {
+  padding: 80px 48px;
+  border-right: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ablb {
+  font-family: var(--M);
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 22px;
+}
+
+.abhl {
+  font-family: var(--D);
+  font-size: clamp(40px, 4.8vw, 74px);
+  line-height: 1.0;
+  font-weight: 400;
+}
+
+.abimg {
+  margin-top: 44px;
+}
+
+.abimg img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  filter: contrast(1.05) saturate(.88);
+}
+
+.abcap {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 8px;
+}
+
+.abr {
+  padding: 80px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.abb {
+  font-size: 16px;
+  line-height: 1.85;
+  color: #333;
+  margin-bottom: 36px;
+}
+
+.abb strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 44px;
+}
+
+.tag {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: 1px solid var(--mist);
+  padding: 7px 14px;
+  border-radius: 40px;
+  color: #666;
+  transition: all .25s;
+}
+
+.tag:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+
+.abq {
+  border-left: 2px solid var(--rust);
+  padding-left: 18px;
+  margin-bottom: 44px;
+}
+
+.abq p {
+  font-family: var(--D);
+  font-size: 20px;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.abq cite {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 6px;
+  display: block;
+}
+
+.btn {
+  display: inline-block;
+  font-family: var(--M);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 13px 30px;
+  text-decoration: none;
+  transition: background .25s;
+  align-self: flex-start;
+}
+
+.btn:hover {
+  background: var(--rust);
+}
+
+/* ── BENTO WORK ── */
+#work {
+  padding: 80px 48px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.sh {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--mist);
+}
+
+.st {
+  font-family: var(--D);
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 400;
+}
+
+.sm {
+  font-family: var(--M);
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: #999;
+}
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(110px, auto);
+  gap: 5px;
+}
+
+.bc {
+  background: var(--char);
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+
+.bc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .7;
+  transition: opacity .5s, transform .6s;
+  filter: grayscale(25%);
+}
+
+.nd {
+  font-size: 12px;
+  color: #444;
+  margin-top: 8px;
+  line-height: 1.65;
+}
+
+/* ── PROCESS ── */
+#process {
+  background: var(--char);
+  padding: 0 48px 80px;
+  border-bottom: 1px solid #1a1a18;
+}
+
+.pg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 0;
+}
+
+.pc {
+  background: #0d0c0a;
+  padding: 48px 38px;
+  position: relative;
+  overflow: hidden;
+  transition: background .3s;
+}
+
+.pc:hover {
+  background: #181614;
+}
+
+.pc::before {
+  content: attr(data-n);
+  position: absolute;
+  top: -24px;
+  right: 20px;
+  font-family: var(--D);
+  font-size: 130px;
+  color: rgba(255, 255, 255, .025);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.pn {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 18px;
+}
+
+.pname {
+  font-family: var(--D);
+  font-size: clamp(26px, 3vw, 46px);
+  color: var(--cream);
+  font-weight: 400;
+  margin-bottom: 14px;
+  transition: color .3s;
+}
+
+.pc:hover .pname {
+  color: var(--rust);
+}
+
+.pdesc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.pimg {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  margin-top: 26px;
+  opacity: .4;
+  filter: grayscale(50%);
+  transition: opacity .3s;
+}
+
+.pc:hover .pimg {
+  opacity: .7;
+}
+
+.pb {
+  grid-column: 1 / -1;
+  background: var(--rust);
+  padding: 38px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pb h3 {
+.bc:hover img {
+  opacity: 1;
+  transform: scale(1.05);
+  filter: grayscale(0);
+}
+
+.bl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .78));
+  transform: translateY(6px);
+  transition: transform .3s;
+}
+
+.bc:hover .bl {
+  transform: translateY(0);
+}
+
+.bl h3 {
+  font-family: var(--D);
+  font-size: 19px;
+  color: var(--cream);
+  font-weight: 400;
+}
+
+.bl span {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .13em;
+  color: #bbb;
+}
+
+.btag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: var(--M);
+  font-size: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: var(--rust);
+  color: var(--cream);
+  padding: 4px 9px;
+  border-radius: 20px;
+}
+
+.b1 {
+  grid-column: span 7;
+  grid-row: span 3;
+}
+
+.b2 {
+  grid-column: span 5;
+  grid-row: span 2;
+}
+
+.b3 {
+  grid-column: span 5;
+  grid-row: span 1;
+  min-height: 130px;
+}
+
+.b4 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+.b5 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+.b6 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* ── NUMBERS ── */
+#nums {
+  background: var(--char);
+  padding: 70px 48px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.nc {
+  padding: 0 36px 0 0;
+  border-right: 1px solid #222;
+}
+
+.nc:first-child {
+  padding-left: 0;
+}
+
+.nc:last-child {
+  border-right: none;
+}
+
+.nv {
+  font-family: var(--D);
+  font-size: clamp(44px, 5vw, 78px);
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1;
+}
+
+.nv span {
+  color: var(--rust);
+}
+
+.nl2 {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #555;
+  margin-top: 6px;
+}
+
+  font-family: var(--D);
+  font-size: clamp(22px, 2.8vw, 40px);
+  color: var(--cream);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.pb a {
+  font-family: var(--M);
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, .35);
+  padding-bottom: 2px;
+}
+
+/* MARQUEE BREAK */
+.mqb {
+  background: var(--cream);
+  overflow: hidden;
+  padding: 18px 0;
+  border-top: 1px solid var(--mist);
+  border-bottom: 1px solid var(--mist);
+}
+
+.mqbi {
+  display: flex;
+  white-space: nowrap;
+  animation: ms 20s linear infinite;
+}
+
+.mqbi span {
+  font-family: var(--D);
+  font-size: 38px;
+  color: var(--ink);
+  padding: 0 32px;
+  font-style: italic;
+}
+
+.mqbi b {
+  color: var(--rust);
+  font-weight: 400;
+}
+
+/* ── CAPABILITIES ── */
+#features {
+  padding: 80px 48px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.fl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 36px;
+}
+
+.fc {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 38px;
+  border: 1px solid var(--mist);
+  position: relative;
+  overflow: hidden;
+  min-height: 240px;
+  transition: border-color .3s;
+}
+
+.fc:hover {
+  border-color: var(--rust);
+}
+
+.fcbg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity .5s;
+}
+
+.fc:hover .fcbg {
+  opacity: .1;
+}
+
+.fcn {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+
+.fcname {
+  font-family: var(--D);
+  font-size: clamp(22px, 2.4vw, 36px);
+  font-weight: 400;
+  margin-top: auto;
+  padding-top: 16px;
+  transition: color .3s;
+}
+
+.fc:hover .fcname {
+  color: var(--rust);
+}
+
+.fcyr {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .16em;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.fca {
+  font-size: 22px;
+  color: var(--rust);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity .3s, transform .3s;
+}
+
+.fc:hover .fca {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fw {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 110px;
+  padding: 28px 38px;
+}
+
+.fw .fcname {
+  font-size: clamp(26px, 2.8vw, 44px);
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* ── TEAM ── */
+#team {
+  padding: 80px 48px;
+  border-bottom: 1px solid var(--ink);
+  background: var(--char);
+}
+
+#team .st {
+  color: var(--cream);
+}
+
+#team .sh {
+  border-bottom-color: #222;
+}
+
+#team .sm {
+  color: #444;
+}
+
+.tg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin-top: 36px;
+}
+
+.tc {
+  position: relative;
+  overflow: hidden;
+}
+
+.tc img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  filter: grayscale(55%) contrast(1.1);
+  transition: filter .5s, transform .5s;
+}
+
+.tc:hover img {
+  filter: grayscale(0) contrast(1);
+  transform: scale(1.04);
+}
+
+.ti {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 18px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .82));
+  transform: translateY(100%);
+  transition: transform .4s;
+}
+
+.tc:hover .ti {
+  transform: translateY(0);
+}
+
+.ti h4 {
+  font-family: var(--D);
+  font-size: 19px;
+  color: var(--cream);
+  font-weight: 400;
+}
+
+.ti span {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.tr {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-family: var(--M);
+  font-size: 7px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, .55);
+  color: var(--cream);
+  padding: 4px 9px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── TESTIMONIAL ── */
+#test {
+  padding: 90px 48px;
+  border-bottom: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 72px;
+  align-items: center;
+}
+
+.tsl {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tslabel {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+
+.tsl img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  filter: grayscale(30%);
+}
+
+.tsq {
+  font-family: var(--D);
+  font-size: clamp(26px, 3.2vw, 50px);
+  line-height: 1.15;
+  font-weight: 400;
+  font-style: italic;
+  margin-bottom: 28px;
+}
+
+.tsq em {
+  color: var(--rust);
+  font-style: normal;
+}
+
+.tsm {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tsav {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(20%);
+}
+
+.tsmt h5 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tsmt span {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--rust);
+  padding: 76px 48px 44px;
+}
+
+.ftt {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(255, 255, 255, .22);
+}
+
+.fthl {
+  font-family: var(--D);
+  font-size: clamp(40px, 7vw, 108px);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: .88;
+  font-style: italic;
+}
+
+.ftr {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ftcl {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .45);
+  margin-bottom: 10px;
+}
+
+.ftem {
+  font-family: var(--D);
+  font-size: clamp(18px, 2.4vw, 34px);
+  color: var(--cream);
+  font-style: italic;
+}
+
+.ftlks {
+  display: flex;
+  gap: 26px;
+  margin-top: 28px;
+}
+
+.ftlks a {
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.ftlks a:hover {
+  color: var(--cream);
+}
+
+.ftb {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 28px;
+  font-family: var(--M);
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .38);
+}
+
+/* REVEAL */
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s, transform .7s;
+}
+
+.rv.on {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rv1 {
+  transition-delay: .1s;
+}
+
+.rv2 {
+  transition-delay: .2s;
+}
+
+.rv3 {
+  transition-delay: .3s;
+}
+
+.rv4 {
+  transition-delay: .42s;
+}
+
+/* GRAIN */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 8000;
+  opacity: .3;
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- OVERLAYS -->
+<div class="ov" id="ov-a"><div class="ov-row"><div class="om">Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;<b>Origin</b>&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;<b>Origin</b>&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;Origin&nbsp;·&nbsp;</div></div></div>
+<div class="ov" id="ov-b"><div class="ov-row"><div class="om">Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;<b>Craft</b>&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;<b>Craft</b>&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;Craft&nbsp;·&nbsp;</div></div></div>
+<div class="ov" id="ov-c"><div class="ov-row"><div class="om">Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;<b>Atelier</b>&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;<b>Atelier</b>&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;Atelier&nbsp;·&nbsp;</div></div></div>
+<div class="ov" id="ov-d"><div class="ov-row"><div class="om">People&nbsp;·&nbsp;People&nbsp;·&nbsp;<b>People</b>&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;<b>People</b>&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;People&nbsp;·&nbsp;</div></div></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nl">FORGE</span>
+  <ul class="nls">
+    <li><a href="#hero"    data-ov="ov-a">Origin</a></li>
+    <li><a href="#work"    data-ov="ov-b">Craft</a></li>
+    <li><a href="#process" data-ov="ov-c">Atelier</a></li>
+    <li><a href="#team"    data-ov="ov-d">People</a></li>
+  </ul>
+  <a href="#test" class="np">Get In Touch</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="h-top">
+    <span class="htag rv">Visual Architects — Est. 2019</span>
+    <span class="htag rv" style="color:#bbb">Scroll ↓</span>
+  </div>
+
+  <h1 class="hhl rv">
+    Sculpting<br>
+    <em>Motion</em>
+    <img class="himg" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop&q=80" alt="">
+    Into<br>
+    Memory
+  </h1>
+
+  <div class="h-bot">
+    <div class="hbc rv">
+      <div class="hsn">140<span style="font-size:.5em;color:var(--rust)">+</span></div>
+      <div class="hsl">Projects Delivered</div>
+    </div>
+    <div class="hbc rv rv1">
+      <p class="hdesc">We fuse industry-grade VFX talent with bold independent vision — forging imagery that burns itself into the minds of anyone who encounters it.</p>
+    </div>
+    <div class="hbc hvc rv rv2">
+      <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80" alt="Reel preview">
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="tk">
+  <div class="tki">
+    <span>VFX Production</span><span>Motion Design</span><span>World Building</span><span>3D Rendering</span>
+    <span>Brand Cinema</span><span>Colour Science</span><span>Sound Architecture</span><span>Visual Strategy</span>
+    <span>VFX Production</span><span>Motion Design</span><span>World Building</span><span>3D Rendering</span>
+    <span>Brand Cinema</span><span>Colour Science</span><span>Sound Architecture</span><span>Visual Strategy</span>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="abl rv">
+    <div>
+      <p class="ablb">Who We Are</p>
+      <h2 class="abhl">This is<br><em style="font-style:italic;color:var(--rust)">Forge</em><br>Atelier,</h2>
+    </div>
+    <div class="abimg">
+      <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&auto=format&fit=crop&q=80" alt="Studio interior">
+      <p class="abcap">HQ — Kathmandu Studio, 2025</p>
+    </div>
+  </div>
+  <div class="abr">
+    <p class="abb rv">
+      A tight-knit cell of image-makers, motion designers, and world-builders. We don't polish brands — we <strong>reconstruct them from scratch</strong>, injecting real cinematic muscle into every frame you release into the world.<br><br>
+      Founded in 2019, we've partnered with independent creators, global studios, and ambitious startups to produce work that doesn't resemble anyone else's. No templates. No shortcuts. Every project receives our complete obsession.
+    </p>
+    <div class="tags rv rv1">
+      <span class="tag">VFX &amp; Compositing</span>
+      <span class="tag">3D Environments</span>
+      <span class="tag">Motion Graphics</span>
+      <span class="tag">Brand Films</span>
+      <span class="tag">Colour Grading</span>
+      <span class="tag">Sound Design</span>
+      <span class="tag">Campaign Direction</span>
+    </div>
+    <div class="abq rv rv2">
+      <p>"The difference between good and extraordinary is the willingness to keep going after good is already done."</p>
+      <cite>— Forge Atelier Manifesto, 2019</cite>
+    </div>
+    <a href="#work" class="btn rv rv3">View Our Craft →</a>
+  </div>
+</section>
+
+<!-- ══ WORK BENTO ══ -->
+<section id="work">
+  <div class="sh rv">
+    <h2 class="st">Commissioned Pieces</h2>
+    <span class="sm">06 Projects — 2022–2025</span>
+  </div>
+  <div class="bento">
+    <div class="bc b1 rv">
+      <span class="btag">Featured</span>
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Synthetic Realms</h3><span>3DWORX — 2025</span></div>
+    </div>
+    <div class="bc b2 rv rv1">
+      <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Liquid Identity</h3><span>Studio Verd — 2024</span></div>
+    </div>
+    <div class="bc b3 rv rv2">
+      <img src="https://images.unsplash.com/photo-1639628735078-ed2f038a193e?w=800&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Neon Fragments</h3><span>Internal — 2024</span></div>
+    </div>
+    <div class="bc b4 rv rv1">
+      <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Dark Protocol</h3><span>Cipher Co. — 2023</span></div>
+    </div>
+    <div class="bc b5 rv rv2">
+      <img src="https://images.unsplash.com/photo-1535016120720-40c646be5580?w=600&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Amber Signal</h3><span>Wavelength — 2023</span></div>
+    </div>
+    <div class="bc b6 rv rv3">
+      <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80" alt="">
+      <div class="bl"><h3>Retrograde</h3><span>Archive Ltd. — 2022</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ NUMBERS ══ -->
+<div id="nums">
+  <div class="nc rv">
+    <div class="nv">140<span>+</span></div>
+    <div class="nl2">Projects Shipped</div>
+    <p class="nd">Across five continents, every screen size and format imaginable.</p>
+  </div>
+  <div class="nc rv rv1">
+    <div class="nv">06<span>yrs</span></div>
+    <div class="nl2">In the Field</div>
+    <p class="nd">Built from nothing in a basement in 2019. Operating globally since.</p>
+  </div>
+  <div class="nc rv rv2">
+    <div class="nv">34<span>+</span></div>
+    <div class="nl2">Collaborators</div>
+    <p class="nd">A rotating roster of the sharpest visual minds in the industry.</p>
+  </div>
+  <div class="nc rv rv3">
+    <div class="nv">12<span>✦</span></div>
+    <div class="nl2">Industry Awards</div>
+    <p class="nd">Recognition from Cannes Lions, D&amp;AD, and the Webby Awards.</p>
+  </div>
+</div>
+
+<!-- ══ PROCESS ══ -->
+<section id="process">
+  <div class="sh rv" style="padding-top:80px;border-bottom-color:#252525">
+    <h2 class="st" style="color:var(--cream)">How We Build</h2>
+    <span class="sm" style="color:#444">03 Phases</span>
+  </div>
+  <div class="pg">
+    <div class="pc rv" data-n="01">
+      <div class="pn">Phase 01</div>
+      <div class="pname">Ideation</div>
+      <p class="pdesc">Every project starts with an immersive brief session. We tear apart the context, dig through references, build moodboards, and establish a conceptual north star before a single pixel is touched. Strategy isn't optional — it's the skeleton everything hangs from.</p>
+      <img class="pimg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=700&auto=format&fit=crop&q=80" alt="">
+    </div>
+    <div class="pc rv rv1" data-n="02">
+      <div class="pn">Phase 02</div>
+      <div class="pname">Execution</div>
+      <p class="pdesc">Where the blueprint collides with reality. Shooting, rendering, animating, compositing — every single layer assembled with surgical precision. We don't rush. We don't cut corners. We work until it feels inevitable.</p>
+      <img class="pimg" src="https://images.unsplash.com/photo-1493612276216-ee3925520721?w=700&auto=format&fit=crop&q=80" alt="">
+    </div>
+    <div class="pc rv rv2" data-n="03">
+      <div class="pn">Phase 03</div>
+      <div class="pname">Refinement</div>
+      <p class="pdesc">Colour science, audio texture, final grade, delivery mastering. The obsessive last pass that separates competent from extraordinary. Most studios stop at good. We never stop at good.</p>
+      <img class="pimg" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&auto=format&fit=crop&q=80" alt="">
+    </div>
+    <div class="pb rv rv3">
+      <h3>Every frame is a commitment to the unreasonable.</h3>
+      <a href="#features">See Capabilities →</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE BREAK -->
+<div class="mqb">
+  <div class="mqbi">
+    <span>Kinetic</span><b>&nbsp;·&nbsp;</b><span>Immersive</span><b>&nbsp;·&nbsp;</b><span>Visceral</span><b>&nbsp;·&nbsp;</b><span>Precise</span><b>&nbsp;·&nbsp;</b><span>Audacious</span><b>&nbsp;·&nbsp;</b><span>Cinematic</span><b>&nbsp;·&nbsp;</b><span>Intentional</span><b>&nbsp;·&nbsp;</b>
+    <span>Kinetic</span><b>&nbsp;·&nbsp;</b><span>Immersive</span><b>&nbsp;·&nbsp;</b><span>Visceral</span><b>&nbsp;·&nbsp;</b><span>Precise</span><b>&nbsp;·&nbsp;</b><span>Audacious</span><b>&nbsp;·&nbsp;</b><span>Cinematic</span><b>&nbsp;·&nbsp;</b><span>Intentional</span><b>&nbsp;·&nbsp;</b>
+  </div>
+</div>
+
+<!-- ══ CAPABILITIES ══ -->
+<section id="features">
+  <div class="sh rv">
+    <h2 class="st">Capabilities</h2>
+    <span class="sm">Everything under one roof</span>
+  </div>
+  <div class="fl">
+    <div class="fc rv">
+      <div class="fcbg" style="background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80')"></div>
+      <span class="fcn">01</span>
+      <div><div class="fcname">Live Broadcast Suite</div><div class="fcyr">Launched 2025</div></div>
+      <span class="fca">↗</span>
+    </div>
+    <div class="fc rv rv1">
+      <div class="fcbg" style="background-image:url('https://images.unsplash.com/photo-1535016120720-40c646be5580?w=600&auto=format&fit=crop&q=80')"></div>
+      <span class="fcn">02</span>
+      <div><div class="fcname">Pipeline Exchange</div><div class="fcyr">Launched 2025</div></div>
+      <span class="fca">↗</span>
+    </div>
+    <div class="fc rv rv2">
+      <div class="fcbg" style="background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80')"></div>
+      <span class="fcn">03</span>
+      <div><div class="fcname">Vault Archive</div><div class="fcyr">Launched 2022</div></div>
+      <span class="fca">↗</span>
+    </div>
+    <div class="fc rv rv3">
+      <div class="fcbg" style="background-image:url('https://images.unsplash.com/photo-1493612276216-ee3925520721?w=600&auto=format&fit=crop&q=80')"></div>
+      <span class="fcn">04</span>
+      <div><div class="fcname">Cultural Dispatch</div><div class="fcyr">Launched 2022</div></div>
+      <span class="fca">↗</span>
+    </div>
+    <div class="fc fw rv rv1">
+      <div class="fcbg" style="background-image:url('https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200&auto=format&fit=crop&q=80')"></div>
+      <span class="fcn">05</span>
+      <div><div class="fcname">End-to-End Campaign Direction</div><div class="fcyr">Full-service — Available Now</div></div>
+      <span class="fca" style="opacity:1;transform:none;font-size:28px">↗</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TEAM ══ -->
+<section id="team">
+  <div class="sh rv">
+    <h2 class="st">The People</h2>
+    <span class="sm">Core Collaborators</span>
+  </div>
+  <div class="tg">
+    <div class="tc rv">
+      <span class="tr">Creative Director</span>
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=80" alt="Mira Solano">
+      <div class="ti"><h4>Mira Solano</h4><span>Creative Director</span></div>
+    </div>
+    <div class="tc rv rv1">
+      <span class="tr">VFX Supervisor</span>
+      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80" alt="Darius Kael">
+      <div class="ti"><h4>Darius Kael</h4><span>VFX Supervisor</span></div>
+    </div>
+    <div class="tc rv rv2">
+      <span class="tr">Motion Designer</span>
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80" alt="Yuna Park">
+      <div class="ti"><h4>Yuna Park</h4><span>Motion Designer</span></div>
+    </div>
+    <div class="tc rv rv3">
+      <span class="tr">Sound Architect</span>
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80" alt="Theo Marsh">
+      <div class="ti"><h4>Theo Marsh</h4><span>Sound Architect</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIAL ══ -->
+<section id="test">
+  <div class="tsl rv">
+    <p class="tslabel">Client Voice</p>
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&auto=format&fit=crop&q=80" alt="Client team">
+  </div>
+  <div class="rv rv1">
+    <p class="tsq">
+      "Forge didn't just deliver what we asked for — they handed us something we <em>didn't know we needed</em>. The campaign tripled our engagement overnight."
+    </p>
+    <div class="tsm">
+      <img class="tsav" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="">
+      <div class="tsmt">
+        <h5>Priya Nair</h5>
+        <span>CMO — Lumen Collective</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="ftt">
+    <h2 class="fthl rv">Ready<br>to burn<br>brighter?</h2>
+    <div class="ftr rv rv1">
+      <div>
+        <p class="ftcl">Drop us a line</p>
+        <p class="ftem">ignite@forgeatelier.co</p>
+      </div>
+      <div class="ftlks">
+        <a href="#">Instagram</a>
+        <a href="#">Behance</a>
+        <a href="#">Vimeo</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+  <div class="ftb">
+    <span>© Forge Atelier 2025</span>
+    <span>Everywhere at Once</span>
+    <span>Built with Obsession</span>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => {
+  cur.style.transform = `translate(${e.clientX-5}px,${e.clientY-5}px)`;
+});
+document.querySelectorAll('a,.bc,.tc,.pc,.fc,.nc').forEach(el => {
+  el.addEventListener('mouseenter',()=>cur.classList.add('lg'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('lg'));
+});
+
+/* OVERLAYS */
+document.querySelectorAll('[data-ov]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.getElementById(el.dataset.ov).classList.add('on'));
+  el.addEventListener('mouseleave',()=>document.getElementById(el.dataset.ov).classList.remove('on'));
+});
+
+/* SCROLL REVEAL */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});
+},{threshold:0.08});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
